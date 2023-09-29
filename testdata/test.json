@@ -1,0 +1,29 @@
+{
+  "eClass": "http://www.eclipse.org/emf/2002/Ecore#//EPackage",
+  "name": "test",
+  "UNKNOWN": 42,
+  "eAnnotations": [
+    {
+      "source": "http://www.eclipse.org/emf/2002/GenModel",
+      "details": {
+        "bundleManifest": "false",
+        "complianceLevel": "11.0",
+        "modelName": "Otto Group Test",
+        "suppressGenModelAnnotations": "false",
+        "basePackage": "com.ottogroup.test"
+      }
+    }
+  ],
+  "eClassifiers": [
+    {
+      "eClass": "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "name": "Test",
+      "eStructuralFeatures": [
+        {
+          "eClass": "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+          "name": "foo"
+        }
+      ]
+    }
+  ]
+}

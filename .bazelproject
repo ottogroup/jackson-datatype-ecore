@@ -1,0 +1,22 @@
+directories:
+  .
+
+workspace_type: java
+
+targets:
+  //src/test/java/com/ottogroup/jackson/ecore:AnnotationTest
+  //src/test/java/com/ottogroup/jackson/ecore:ArrayTest
+  //src/test/java/com/ottogroup/jackson/ecore:ContainmentTest
+  //src/test/java/com/ottogroup/jackson/ecore:DynamicTest
+  //src/test/java/com/ottogroup/jackson/ecore:EcoreTest
+  //src/test/java/com/ottogroup/jackson/ecore:EnumTest
+  //src/test/java/com/ottogroup/jackson/ecore:MapTest
+  //src/test/java/com/ottogroup/jackson/ecore:PolymorphicTest
+  //src/test/java/com/ottogroup/jackson/ecore:RawTest
+  //src/test/java/com/ottogroup/jackson/ecore:ReferenceTest
+  //src/test/java/com/ottogroup/jackson/ecore:ResourceTest
+  //src/test/java/com/ottogroup/jackson/ecore:TypeResolverTest
+  //src/test/java/com/ottogroup/jackson/ecore:ValueTest
+
+test_sources:
+  src/test/java

@@ -1,0 +1,15 @@
+{
+  "eClass": "http://www.emfjson.org/jackson/model#//Container",
+  "elements": [
+    {
+      "eClass": "http://www.emfjson.org/jackson/model#//ConcreteTypeOne",
+      "name": "First",
+      "propTypeOne": "one"
+    },
+    {
+      "eClass": "http://www.emfjson.org/jackson/model#//ConcreteTypeTwo",
+      "name": "Two",
+      "propTypeTwo": "two"
+    }
+  ]
+}

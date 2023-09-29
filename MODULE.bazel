@@ -1,0 +1,44 @@
+module(name = "jackson_datatype_ecore")
+
+bazel_dep(name = "rules_jvm_external", version = "5.3")
+maven = use_extension("@rules_jvm_external//:extensions.bzl", "maven")
+
+JACKSON_VERSION = "2.15.2"
+
+XTEXT_VERSION = "2.32.0"
+
+maven.install(
+    artifacts = [
+        # Eclipse Modeling Framework
+        "org.eclipse.emf:org.eclipse.emf.common:2.29.0",
+        "org.eclipse.emf:org.eclipse.emf.ecore.xcore:1.26.0",
+        "org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.35.0",
+        "org.eclipse.emf:org.eclipse.emf.ecore:2.35.0",
+
+        # Xtext
+        "org.eclipse.xtext:org.eclipse.xtext:%s" % XTEXT_VERSION,
+        "org.eclipse.xtext:org.eclipse.xtext.ecore:%s" % XTEXT_VERSION,
+        "org.eclipse.xtext:org.eclipse.xtext.util:%s" % XTEXT_VERSION,
+        "org.eclipse.xtext:org.eclipse.xtext.xbase:%s" % XTEXT_VERSION,
+
+        # FasterXML Jackson
+        "com.fasterxml.jackson.core:jackson-annotations:%s" % JACKSON_VERSION,
+        "com.fasterxml.jackson.core:jackson-core:%s" % JACKSON_VERSION,
+        "com.fasterxml.jackson.core:jackson-databind:%s" % JACKSON_VERSION,
+
+        # JUnit
+        "junit:junit:4.13.2",
+
+        # Tools
+        "com.google.errorprone:error_prone_annotations:2.22.0",
+        "com.google.googlejavaformat:google-java-format:1.17.0",
+        "org.fusesource.jansi:jansi:2.4.0",
+    ],
+    excluded_artifacts = ["log4j:log4j"],
+    lock_file = "//:maven_lock.json",
+    fail_if_repin_required = True,
+    version_conflict_policy = "pinned",
+    repositories = ["https://repo1.maven.org/maven2"],
+)
+
+use_repo(maven, "maven", "unpinned_maven")

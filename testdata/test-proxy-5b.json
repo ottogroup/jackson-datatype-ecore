@@ -1,0 +1,7 @@
+{
+  "eClass": "http://www.emfjson.org/jackson/model#//Node",
+  "label": "2",
+  "child": [
+    "testdata/test-proxy-5.json#/"
+  ]
+}

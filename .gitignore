@@ -1,0 +1,8 @@
+# Bazel
+/bazel-bin
+/bazel-jackson-datatype-ecore
+/bazel-out
+/bazel-testlogs
+
+# IntelliJ IDEA
+/.ijwb

@@ -1,0 +1,10 @@
+{
+  "eClass": "http://www.emfjson.org/jackson/model#//PhysicalNode",
+  "label": "2",
+  "siblings": [
+    {
+      "eClass": "http://www.emfjson.org/jackson/model#//PhysicalNode",
+      "$ref": "testdata/test-proxy-7.json#/"
+    }
+  ]
+}

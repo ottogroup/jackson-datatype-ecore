@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="ASCII"?>
+<!--
+  ~ Copyright (c) 2019-2021 Guillaume Hillairet and others.
+  ~
+  ~ This program and the accompanying materials are made available under the
+  ~ terms of the Eclipse Public License 2.0 which is available at
+  ~ https://www.eclipse.org/legal/epl-2.0, or the MIT License which is
+  ~ available at https://opensource.org/licenses/MIT.
+  ~
+  ~ SPDX-License-Identifier: EPL-2.0 OR MIT
+  -->
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="model" nsURI="http://emfjson/dynamic/model" nsPrefix="model">
+  <eClassifiers xsi:type="ecore:EClass" name="A">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="stringValue" unsettable="true">
+      <eType xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="stringValues" upperBound="-1">
+      <eType xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="intValue">
+      <eType xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="intValues" upperBound="-1">
+      <eType xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="dateValue">
+      <eType xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EDate"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="someKind" eType="//Kind"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="custom" eType="//CustomType"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="javaType">
+      <eType xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="javaClass">
+      <eType xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EJavaClass"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="containB" eType="//B" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="containBs" upperBound="-1" eType="//B" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="parent" lowerBound="1" eType="//A" eOpposite="//A/containB"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="refTo" eType="//A"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="refToMany" upperBound="-1" eType="//A"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="B" eSuperTypes="//A"/>
+  <eClassifiers xsi:type="ecore:EClass" name="C" eSuperTypes="//B"/>
+  <eClassifiers xsi:type="ecore:EClass" name="D" eSuperTypes="//B"/>
+  <eClassifiers xsi:type="ecore:EEnum" name="Kind">
+    <eLiterals name="e1"/>
+    <eLiterals name="e2" literal="E2"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EDataType" name="CustomType"/>
+</ecore:EPackage>

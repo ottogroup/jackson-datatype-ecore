@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="test" nsURI="https://ottogroup.com/test" nsPrefix="test">
+  <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+    <details key="bundleManifest" value="false"/>
+    <details key="complianceLevel" value="11.0"/>
+    <details key="modelName" value="Otto Group Test"/>
+    <details key="suppressGenModelAnnotations" value="false"/>
+    <details key="basePackage" value="com.ottogroup.test"/>
+  </eAnnotations>
+  <eClassifiers xsi:type="ecore:EClass" name="Test">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="foo" unique="false"
+                         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="blob" unique="false"
+                         eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//Base64Binary"/>
+  </eClassifiers>
+</ecore:EPackage>
