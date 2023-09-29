@@ -1,6 +1,6 @@
 load("@rules_jvm_external//:defs.bzl", "java_export")
 
-PROJECT_VERSION = "1.0.0"
+PROJECT_VERSION = "1.0.1-SNAPSHOT"
 
 java_export(
     name = "maven",
