@@ -64,7 +64,8 @@ public class ValueTest {
 
   @Test
   public void testOptionSaveDefaultValues() {
-    final var includeDefaultsMapper = TestSetup.mapper.copy().setSerializationInclusion(Include.NON_EMPTY);
+    final var includeDefaultsMapper =
+        TestSetup.mapper.copy().setSerializationInclusion(Include.NON_EMPTY);
     {
       final JsonNode expected = TestSetup.mapper.createObjectNode().put("name", "u1");
 
@@ -75,7 +76,8 @@ public class ValueTest {
     }
 
     {
-      final JsonNode expected = TestSetup.mapper.createObjectNode().put("name", "u1").put("sex", "FEMALE");
+      final JsonNode expected =
+          TestSetup.mapper.createObjectNode().put("name", "u1").put("sex", "FEMALE");
 
       final User u = ModelFactory.eINSTANCE.createUser();
       u.setName("u1");
@@ -85,7 +87,8 @@ public class ValueTest {
     }
 
     {
-      final JsonNode expected = TestSetup.mapper.createObjectNode().put("name", "u1").put("sex", "MALE");
+      final JsonNode expected =
+          TestSetup.mapper.createObjectNode().put("name", "u1").put("sex", "MALE");
 
       final User u = ModelFactory.eINSTANCE.createUser();
       u.setName("u1");
@@ -93,7 +96,8 @@ public class ValueTest {
       assertEquals(expected, includeDefaultsMapper.valueToTree(u));
     }
     {
-      final JsonNode expected = TestSetup.mapper.createObjectNode().put("name", "u1").put("sex", "FEMALE");
+      final JsonNode expected =
+          TestSetup.mapper.createObjectNode().put("name", "u1").put("sex", "FEMALE");
 
       final User u = ModelFactory.eINSTANCE.createUser();
       u.setName("u1");
@@ -110,9 +114,12 @@ public class ValueTest {
             .createObjectNode()
             .put("eClass", "http://www.emfjson.org/jackson/model#//ETypes")
             .put("eString", "Hello")
-            .set("eStrings", TestSetup.mapper.createArrayNode().add("Hello").add("The").add("World"));
+            .set(
+                "eStrings",
+                TestSetup.mapper.createArrayNode().add("Hello").add("The").add("World"));
 
-    final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource =
+        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
     final ETypes valueObject = ModelFactory.eINSTANCE.createETypes();
     valueObject.setEString("Hello");
 
@@ -146,9 +153,12 @@ public class ValueTest {
             .createObjectNode()
             .put("eClass", "http://www.emfjson.org/jackson/model#//ETypes")
             .put("eString", "Hello")
-            .set("eStrings", TestSetup.mapper.createArrayNode().add("Hello").add("The").add("World"));
+            .set(
+                "eStrings",
+                TestSetup.mapper.createArrayNode().add("Hello").add("The").add("World"));
 
-    final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource =
+        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
     resource.load(new ByteArrayInputStream(TestSetup.mapper.writeValueAsBytes(data)), null);
 
     final EObject root = resource.getContents().get(0);
@@ -167,7 +177,8 @@ public class ValueTest {
             .put("eClass", "http://www.emfjson.org/jackson/model#//ETypes")
             .putNull("eString");
 
-    final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource =
+        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
     resource.load(new ByteArrayInputStream(TestSetup.mapper.writeValueAsBytes(data)), null);
 
     final EObject root = resource.getContents().get(0);
@@ -185,7 +196,8 @@ public class ValueTest {
             .put("eInt", 2)
             .set("eInts", TestSetup.mapper.createArrayNode().add(2).add(4).add(7));
 
-    final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource =
+        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
 
     final ETypes valueObject = ModelFactory.eINSTANCE.createETypes();
     valueObject.setEInt(2);
@@ -208,7 +220,8 @@ public class ValueTest {
             .put("eInt", 2)
             .set("eInts", TestSetup.mapper.createArrayNode().add(2).add(4).add(7));
 
-    final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource =
+        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
     resource.load(new ByteArrayInputStream(TestSetup.mapper.writeValueAsBytes(data)), null);
 
     assertEquals(1, resource.getContents().size());
@@ -234,7 +247,8 @@ public class ValueTest {
             .put("eBoolean", true)
             .set("eBooleans", TestSetup.mapper.createArrayNode().add(false).add(true));
 
-    final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource =
+        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
 
     final ETypes valueObject = ModelFactory.eINSTANCE.createETypes();
     valueObject.setEBoolean(true);
@@ -262,7 +276,8 @@ public class ValueTest {
                 "eDate",
                 EcoreUtil.convertToString(EcorePackage.Literals.EDATE, calendar.getTime()));
 
-    final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource =
+        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
     final ETypes valueObject = ModelFactory.eINSTANCE.createETypes();
 
     final Date value = calendar.getTime();
@@ -285,7 +300,8 @@ public class ValueTest {
     final Date value =
         (Date) EcoreUtil.createFromString(EcorePackage.eINSTANCE.getEDate(), "2011-10-10T00:00:00");
 
-    final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource =
+        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
     resource.load(new ByteArrayInputStream(TestSetup.mapper.writeValueAsBytes(data)), null);
 
     assertEquals(1, resource.getContents().size());
@@ -297,7 +313,8 @@ public class ValueTest {
 
   @Test
   public void testBigIntegerValue() {
-    final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource =
+        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
 
     final ETypes valueObject = ModelFactory.eINSTANCE.createETypes();
     valueObject.setEBigInteger(new BigInteger("15"));
@@ -316,7 +333,8 @@ public class ValueTest {
             .put("eClass", "http://www.emfjson.org/jackson/model#//ETypes")
             .put("eBigInteger", 15);
 
-    final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource =
+        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
     resource.load(new ByteArrayInputStream(TestSetup.mapper.writeValueAsBytes(data)), null);
 
     assertEquals(1, resource.getContents().size());
@@ -337,7 +355,8 @@ public class ValueTest {
             .put("eClass", "http://www.emfjson.org/jackson/model#//ETypes")
             .put("eByte", 101);
 
-    final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource =
+        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
 
     final ETypes valueObject = ModelFactory.eINSTANCE.createETypes();
     final byte b = 101;
@@ -349,7 +368,8 @@ public class ValueTest {
 
   @Test
   public void testBigDecimalValue() {
-    final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource =
+        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
 
     final ETypes valueObject = ModelFactory.eINSTANCE.createETypes();
     valueObject.setEBigDecimal(new BigDecimal("1.5"));
@@ -368,7 +388,8 @@ public class ValueTest {
             .put("eClass", "http://www.emfjson.org/jackson/model#//ETypes")
             .put("eBigDecimal", 1.5);
 
-    final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource =
+        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
     resource.load(new ByteArrayInputStream(TestSetup.mapper.writeValueAsBytes(data)), null);
 
     assertEquals(1, resource.getContents().size());
@@ -393,7 +414,8 @@ public class ValueTest {
               [201707260000] ]
           }""";
 
-    final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource =
+        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
     resource.load(new ByteArrayInputStream(data.getBytes(UTF_8)), null);
 
     final ETypes object = (ETypes) resource.getContents().get(0);
@@ -408,7 +430,8 @@ public class ValueTest {
             "eClass": "http://www.emfjson.org/jackson/model#//ETypes",
             "objectType": 1}""";
 
-    final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource =
+        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
     resource.load(new ByteArrayInputStream(data.getBytes(UTF_8)), null);
 
     final ETypes object = (ETypes) resource.getContents().get(0);
@@ -417,7 +440,8 @@ public class ValueTest {
 
   @Test
   public void testSaveObjectTypeValue() {
-    final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource =
+        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
     final ETypes object = ModelFactory.eINSTANCE.createETypes();
     object.setObjectType(1);
     resource.getContents().add(object);

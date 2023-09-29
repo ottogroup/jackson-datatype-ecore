@@ -47,7 +47,9 @@ public class AnnotationTest {
                         TestSetup.mapper
                             .createObjectNode()
                             .put("source", "source")
-                            .set("details", TestSetup.mapper.createObjectNode().put("displayName", "value"))))
+                            .set(
+                                "details",
+                                TestSetup.mapper.createObjectNode().put("displayName", "value"))))
             .put("name", "Foo");
 
     final EClass eClass = EcoreFactory.eINSTANCE.createEClass();
@@ -84,7 +86,8 @@ public class AnnotationTest {
                             .put("eClass", "http://www.eclipse.org/emf/2002/Ecore#//EAnnotation")
                             .put("source", "source")
                             .set(
-                                "details", TestSetup.mapper.createObjectNode().put("displayName", "value"))));
+                                "details",
+                                TestSetup.mapper.createObjectNode().put("displayName", "value"))));
 
     final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("test.json"));
     resource.load(new ByteArrayInputStream(TestSetup.mapper.writeValueAsBytes(data)), null);
@@ -132,7 +135,9 @@ public class AnnotationTest {
                         TestSetup.mapper
                             .createObjectNode()
                             .put("source", "source")
-                            .set("details", TestSetup.mapper.createObjectNode().put("displayName", "value"))))
+                            .set(
+                                "details",
+                                TestSetup.mapper.createObjectNode().put("displayName", "value"))))
             .put("name", "Foo");
 
     assertEquals(expected, actual);

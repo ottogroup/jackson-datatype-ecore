@@ -51,7 +51,8 @@ public class ContainmentTest {
     user.setUserId("1");
     user.setName("John");
 
-    final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("tests/test-save-1.json"));
+    final Resource resource =
+        TestSetup.resourceSet.createResource(URI.createURI("tests/test-save-1.json"));
     assertNotNull(resource);
 
     resource.getContents().add(user);
@@ -87,7 +88,8 @@ public class ContainmentTest {
     user2.setName("Mary");
     user2.setSex(Sex.FEMALE);
 
-    final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("tests/test-save-2.json"));
+    final Resource resource =
+        TestSetup.resourceSet.createResource(URI.createURI("tests/test-save-2.json"));
     resource.getContents().add(user1);
     resource.getContents().add(user2);
 
@@ -126,7 +128,8 @@ public class ContainmentTest {
 
     final var resource =
         (JsonResource)
-            TestSetup.resourceSet.createResource(URI.createURI("testLoadOneObjectWithOneChild.json"));
+            TestSetup.resourceSet.createResource(
+                URI.createURI("testLoadOneObjectWithOneChild.json"));
     resource.load(data, null);
 
     assertNotNull(resource);
@@ -152,7 +155,8 @@ public class ContainmentTest {
                     .add(TestSetup.mapper.createObjectNode()));
 
     final Resource resource =
-        TestSetup.resourceSet.createResource(URI.createURI("testSaveOneObjectWithManyChildren.json"));
+        TestSetup.resourceSet.createResource(
+            URI.createURI("testSaveOneObjectWithManyChildren.json"));
     final Node root = ModelFactory.eINSTANCE.createNode();
     root.getChild().add(ModelFactory.eINSTANCE.createNode());
     root.getChild().add(ModelFactory.eINSTANCE.createNode());
@@ -178,7 +182,8 @@ public class ContainmentTest {
 
     final var resource =
         (JsonResource)
-            TestSetup.resourceSet.createResource(URI.createURI("testLoadOneObjectWithManyChildren.json"));
+            TestSetup.resourceSet.createResource(
+                URI.createURI("testLoadOneObjectWithManyChildren.json"));
     resource.load(data, null);
 
     assertNotNull(resource);

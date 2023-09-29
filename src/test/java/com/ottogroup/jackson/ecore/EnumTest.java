@@ -46,7 +46,8 @@ public class EnumTest {
                     .put("eClass", "http://www.emfjson.org/jackson/model#//User")
                     .put("sex", "FEMALE"));
 
-    final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource =
+        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
 
     final User u1 = ModelFactory.eINSTANCE.createUser();
     u1.setSex(Sex.MALE);
@@ -78,7 +79,8 @@ public class EnumTest {
                     .put("name", "B")
                     .put("sex", "FEMALE"));
 
-    final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource =
+        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
     resource.load(new ByteArrayInputStream(TestSetup.mapper.writeValueAsBytes(data)), null);
 
     assertEquals(2, resource.getContents().size());
@@ -119,7 +121,8 @@ public class EnumTest {
                     .put("unsettableAttributeWithNonNullDefault", "junit")
                     .put("kind", "Three-is-Three"));
 
-    final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource =
+        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
     {
       final PrimaryObject p = ModelFactory.eINSTANCE.createPrimaryObject();
       p.setKind(SomeKind.ONE);
@@ -136,7 +139,8 @@ public class EnumTest {
       resource.getContents().add(p);
     }
 
-    final var reconfiguredMapper = TestSetup.mapper.copy().setSerializationInclusion(Include.NON_EMPTY);
+    final var reconfiguredMapper =
+        TestSetup.mapper.copy().setSerializationInclusion(Include.NON_EMPTY);
     Assert.assertEquals(expected, reconfiguredMapper.valueToTree(resource));
   }
 
@@ -161,7 +165,8 @@ public class EnumTest {
                     .put("eClass", "http://www.emfjson.org/jackson/model#//PrimaryObject")
                     .put("kind", "Three-is-Three"));
 
-    final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource =
+        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
     resource.load(new ByteArrayInputStream(TestSetup.mapper.writeValueAsBytes(data)), null);
 
     assertEquals(3, resource.getContents().size());

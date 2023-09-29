@@ -144,7 +144,8 @@ public class ReferenceTest {
 
     final var maxResource = TestSetup.resourceSet.createResource(URI.createURI("tests/max.json"));
     maxResource.getContents().add(max);
-    final var erikaResource = TestSetup.resourceSet.createResource(URI.createURI("tests/erika.json"));
+    final var erikaResource =
+        TestSetup.resourceSet.createResource(URI.createURI("tests/erika.json"));
     erikaResource.getContents().add(erika);
 
     final var outputStream = new ByteArrayOutputStream();

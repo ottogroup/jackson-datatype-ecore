@@ -17,7 +17,9 @@ public class RawTest {
     final var bytes = TestSetup.mapper.writeValueAsBytes(rawStuff);
     final var actual = TestSetup.mapper.readTree(bytes);
     final var expected =
-        TestSetup.mapper.createObjectNode().set("json", TestSetup.mapper.createObjectNode().put("foo", 42));
+        TestSetup.mapper
+            .createObjectNode()
+            .set("json", TestSetup.mapper.createObjectNode().put("foo", 42));
 
     assertEquals(expected, actual);
   }
@@ -25,7 +27,9 @@ public class RawTest {
   @Test
   public void testDeserialize() {
     final var tree =
-        TestSetup.mapper.createObjectNode().set("json", TestSetup.mapper.createObjectNode().put("foo", 42));
+        TestSetup.mapper
+            .createObjectNode()
+            .set("json", TestSetup.mapper.createObjectNode().put("foo", 42));
 
     final var rawStuff = TestSetup.mapper.convertValue(tree, RawStuff.class);
     assertEquals("{\"foo\":42}", rawStuff.getJson());

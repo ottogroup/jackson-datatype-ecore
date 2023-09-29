@@ -106,7 +106,8 @@ public class ArrayTest {
                 [2.1, 2.2] ]
             }""";
 
-    final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource =
+        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
     resource.load(new ByteArrayInputStream(data.getBytes(UTF_8)), null);
 
     final ArrayHost host = (ArrayHost) resource.getContents().get(0);
@@ -127,7 +128,8 @@ public class ArrayTest {
                 ["2.1", "2.2"] ]
             }""";
 
-    final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource =
+        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
     resource.load(new ByteArrayInputStream(data.getBytes(UTF_8)), null);
 
     final ArrayHost host = (ArrayHost) resource.getContents().get(0);

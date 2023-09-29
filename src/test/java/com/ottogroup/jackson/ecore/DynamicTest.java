@@ -42,7 +42,8 @@ import org.junit.Test;
 public class DynamicTest {
   @Test
   public void testWriteByteArrayJSON() throws IOException {
-    final var modelResource = TestSetup.resourceSet.getResource(URI.createURI("testdata/test.ecore"), true);
+    final var modelResource =
+        TestSetup.resourceSet.getResource(URI.createURI("testdata/test.ecore"), true);
     final var ePackage = (EPackage) modelResource.getContents().get(0);
     final var eClass = (EClass) ePackage.getEClassifier("Test");
     final var eObject = EcoreUtil.create(eClass);
@@ -110,9 +111,13 @@ public class DynamicTest {
             .set("containB", TestSetup.mapper.createObjectNode().put("intValue", 42));
 
     final EClass classA =
-        (EClass) TestSetup.resourceSet.getEObject(URI.createURI("http://emfjson/dynamic/model#//A"), true);
+        (EClass)
+            TestSetup.resourceSet.getEObject(
+                URI.createURI("http://emfjson/dynamic/model#//A"), true);
     final EClass classB =
-        (EClass) TestSetup.resourceSet.getEObject(URI.createURI("http://emfjson/dynamic/model#//B"), true);
+        (EClass)
+            TestSetup.resourceSet.getEObject(
+                URI.createURI("http://emfjson/dynamic/model#//B"), true);
 
     final EObject a1 = EcoreUtil.create(classA);
     final EObject b1 = EcoreUtil.create(classB);
@@ -162,11 +167,16 @@ public class DynamicTest {
             .put("someKind", "e1");
 
     final EClass a =
-        (EClass) TestSetup.resourceSet.getEObject(URI.createURI("http://emfjson/dynamic/model#//A"), true);
+        (EClass)
+            TestSetup.resourceSet.getEObject(
+                URI.createURI("http://emfjson/dynamic/model#//A"), true);
     final EObject a1 = EcoreUtil.create(a);
 
     final var writer =
-        TestSetup.mapper.copy().setSerializationInclusion(Include.NON_EMPTY).writerFor(EObject.class);
+        TestSetup.mapper
+            .copy()
+            .setSerializationInclusion(Include.NON_EMPTY)
+            .writerFor(EObject.class);
     final var bytes = writer.writeValueAsBytes(a1);
     final var actual = TestSetup.mapper.readTree(bytes);
 
@@ -181,7 +191,8 @@ public class DynamicTest {
             .put("eClass", "http://emfjson/dynamic/model#//A")
             .put("someKind", "E2");
 
-    final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource =
+        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
     resource.load(new ByteArrayInputStream(TestSetup.mapper.writeValueAsBytes(data)), null);
 
     assertEquals(1, resource.getContents().size());

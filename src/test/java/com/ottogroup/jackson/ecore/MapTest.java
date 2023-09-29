@@ -32,9 +32,11 @@ public class MapTest {
 
   @Test
   public void testSaveMap() throws IOException {
-    final JsonNode expected = TestSetup.mapper.readTree(Paths.get("testdata/test-map-1.json").toFile());
+    final JsonNode expected =
+        TestSetup.mapper.readTree(Paths.get("testdata/test-map-1.json").toFile());
 
-    final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("tests/test-map-1.json"));
+    final Resource resource =
+        TestSetup.resourceSet.createResource(URI.createURI("tests/test-map-1.json"));
 
     final ETypes types = ModelFactory.eINSTANCE.createETypes();
     {
@@ -84,9 +86,11 @@ public class MapTest {
 
   @Test
   public void testSaveMapWithStringKey() throws IOException {
-    final JsonNode expected = TestSetup.mapper.readTree(Paths.get("testdata/test-map-2.json").toFile());
+    final JsonNode expected =
+        TestSetup.mapper.readTree(Paths.get("testdata/test-map-2.json").toFile());
 
-    final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("tests/test-map-2.json"));
+    final Resource resource =
+        TestSetup.resourceSet.createResource(URI.createURI("tests/test-map-2.json"));
 
     final ETypes types = ModelFactory.eINSTANCE.createETypes();
 
@@ -129,7 +133,8 @@ public class MapTest {
     final JsonNode expected =
         TestSetup.mapper
             .createObjectNode()
-            .set("dataTypeMapValues", TestSetup.mapper.createObjectNode().put("test.json", "hello"));
+            .set(
+                "dataTypeMapValues", TestSetup.mapper.createObjectNode().put("test.json", "hello"));
 
     final ETypes types = ModelFactory.eINSTANCE.createETypes();
     types.getDataTypeMapValues().put("test.json", "hello");
@@ -144,7 +149,8 @@ public class MapTest {
         TestSetup.mapper
             .createObjectNode()
             .put("eClass", "http://www.emfjson.org/jackson/model#//ETypes")
-            .set("dataTypeMapValues", TestSetup.mapper.createObjectNode().put("test.json", "hello"));
+            .set(
+                "dataTypeMapValues", TestSetup.mapper.createObjectNode().put("test.json", "hello"));
 
     final ETypes types = TestSetup.mapper.reader().forType(ETypes.class).readValue(data);
 

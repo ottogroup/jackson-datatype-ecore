@@ -52,7 +52,8 @@ public class PolymorphicTest {
                             .put("eClass", "http://www.emfjson.org/jackson/model#//ConcreteTypeTwo")
                             .put("name", "Two")));
 
-    final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("tests/types.json"));
+    final Resource resource =
+        TestSetup.resourceSet.createResource(URI.createURI("tests/types.json"));
 
     final Container c = ModelFactory.eINSTANCE.createContainer();
     final ConcreteTypeOne one = ModelFactory.eINSTANCE.createConcreteTypeOne();

@@ -3,6 +3,8 @@ package tools;
 import static org.fusesource.jansi.Ansi.ansi;
 import static tools.VanillaXcoreGenerator.MODEL_DIRECTORY_PLACEHOLDER;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.UncheckedIOException;
@@ -12,8 +14,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import jakarta.inject.Inject;
-import jakarta.inject.Provider;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
 import org.eclipse.emf.ecore.xcore.XcoreStandaloneSetup;

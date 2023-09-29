@@ -11,8 +11,6 @@ import com.fasterxml.jackson.databind.introspect.Annotated;
 import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.introspect.ObjectIdInfo;
-import java.io.Serial;
-import java.lang.annotation.Annotation;
 import com.ottogroup.jackson.ecore.annotation.EJsonAlias;
 import com.ottogroup.jackson.ecore.annotation.EJsonIgnore;
 import com.ottogroup.jackson.ecore.annotation.EJsonRawValue;
@@ -23,6 +21,8 @@ import com.ottogroup.jackson.ecore.deser.RawDeserializer;
 import com.ottogroup.jackson.ecore.introspect.AnnotatedFeature;
 import com.ottogroup.jackson.ecore.ser.EObjectIdGenerator;
 import com.ottogroup.jackson.ecore.type.EClassType;
+import java.io.Serial;
+import java.lang.annotation.Annotation;
 import org.eclipse.emf.ecore.EModelElement;
 import org.eclipse.emf.ecore.EReference;
 

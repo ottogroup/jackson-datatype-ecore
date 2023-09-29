@@ -12,9 +12,9 @@ import com.fasterxml.jackson.databind.deser.BeanDeserializerFactory;
 import com.fasterxml.jackson.databind.deser.DeserializerFactory;
 import com.fasterxml.jackson.databind.deser.SettableBeanProperty;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
-import java.io.Serial;
 import com.ottogroup.jackson.ecore.introspect.EClassDescription;
 import com.ottogroup.jackson.ecore.introspect.FeaturePropertyDefinition;
+import java.io.Serial;
 
 /**
  * A factory for {@link com.fasterxml.jackson.databind.deser.BeanDeserializer}s for typical Java
