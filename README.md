@@ -57,3 +57,15 @@ as run configurations.
 
 Please have a look at the [`Makefile`](./Makefile) for some common tasks like formatting and testing
 the code.
+
+### Managing dependencies
+
+External dependencies are configured using [bzlmod](https://bazel.build/external/overview#bzlmod).
+External _Maven_ dependencies are managed
+using [rules_jvm_external](https://github.com/bazelbuild/rules_jvm_external). You can find the
+configuration in [`MODULE.bazel`](./MODULE.bazel).
+
+When updating Maven dependencies, make sure to update the lock file using `make pin` for the changes
+to take effect.
+
+Outdated Maven dependencies can be listed using `make outdated`. 
