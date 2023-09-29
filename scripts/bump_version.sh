@@ -8,4 +8,6 @@ if [[ $# -ne 2 ]]; then
   exit 1
 fi
 
-exec sed --in-place "/^PROJECT_VERSION =/c\\PROJECT_VERSION = \"$2\"" "$1"
+tmpfile=$(mktemp)
+awk -v new_version="$2" '/^PROJECT_VERSION =/ { gsub(/".+"/, "\"" new_version "\"") } ; { print }' "$1" > "$tmpfile"
+mv "$tmpfile" "$1"
