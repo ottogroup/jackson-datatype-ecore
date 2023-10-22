@@ -8,4 +8,14 @@ if [[ $# -ne 1 ]]; then
   exit 1
 fi
 
-exec awk 'match($0, /^PROJECT_VERSION = "(.*)"$/, matches) { print matches[1] }' "$1"
+REGEX='^PROJECT_VERSION = "(.+)"$'
+readonly REGEX
+
+while read -r line; do
+  if [[ "$line" =~ $REGEX ]]; then
+    printf '%s\n' "${BASH_REMATCH[1]}"
+    exit 0
+  fi
+done < "$1"
+
+exit 1
