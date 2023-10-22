@@ -27,11 +27,12 @@ public class ETypeResolverBuilder extends DefaultTypeResolverBuilder {
   public boolean useForType(final JavaType t) {
     final var validity = subTypeValidator(null).validateBaseType(null, t);
     if (validity == Validity.ALLOWED) {
-      return super.useForType(t)
-          || switch (_appliesFor) {
-            case JAVA_LANG_OBJECT, OBJECT_AND_NON_CONCRETE -> t.hasRawClass(EObject.class);
-            default -> false;
-          };
+      if (super.useForType(t)) {
+        return true;
+      } else if (_appliesFor == DefaultTyping.JAVA_LANG_OBJECT
+          || _appliesFor == DefaultTyping.OBJECT_AND_NON_CONCRETE) {
+        return t.hasRawClass(EObject.class);
+      }
     }
     return false;
   }
