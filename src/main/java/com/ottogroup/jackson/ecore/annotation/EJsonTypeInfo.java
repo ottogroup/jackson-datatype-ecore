@@ -2,6 +2,7 @@ package com.ottogroup.jackson.ecore.annotation;
 
 import com.fasterxml.jackson.annotation.JsonTypeId;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.OptBoolean;
 import java.lang.annotation.Annotation;
 import org.eclipse.emf.ecore.EAnnotation;
 
@@ -52,5 +53,13 @@ public class EJsonTypeInfo extends EAnnotationBridge implements JsonTypeInfo {
   public boolean visible() {
     final var visible = ann.getDetails().get("visible");
     return Boolean.parseBoolean(visible);
+  }
+
+  @Override
+  public OptBoolean requireTypeIdForSubtypes() {
+    final var setting = ann.getDetails().get("requireTypeIdForSubtypes");
+    return setting == null
+        ? OptBoolean.DEFAULT
+        : OptBoolean.fromBoolean(Boolean.parseBoolean(setting));
   }
 }

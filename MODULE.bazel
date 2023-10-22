@@ -3,7 +3,7 @@ module(name = "jackson_datatype_ecore")
 bazel_dep(name = "rules_jvm_external", version = "5.3")
 maven = use_extension("@rules_jvm_external//:extensions.bzl", "maven")
 
-JACKSON_VERSION = "2.15.3"
+JACKSON_VERSION = "2.16.0"
 
 XTEXT_VERSION = "2.32.0"
 

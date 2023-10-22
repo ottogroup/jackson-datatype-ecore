@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerator.IdKey;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.InjectableValues;
+import com.fasterxml.jackson.databind.cfg.CacheProvider;
 import com.fasterxml.jackson.databind.deser.DefaultDeserializationContext;
 import com.fasterxml.jackson.databind.deser.DeserializerFactory;
 import com.fasterxml.jackson.databind.deser.impl.ReadableObjectId;
@@ -38,6 +39,10 @@ public class EDeserializationContext extends DefaultDeserializationContext {
     super(src, config);
   }
 
+  protected EDeserializationContext(DefaultDeserializationContext src, CacheProvider cp) {
+    super(src, cp);
+  }
+
   @Override
   public DefaultDeserializationContext copy() {
     return new EDeserializationContext(this);
@@ -63,6 +68,11 @@ public class EDeserializationContext extends DefaultDeserializationContext {
   @Override
   public DefaultDeserializationContext with(final DeserializerFactory factory) {
     return new EDeserializationContext(factory);
+  }
+
+  @Override
+  public DefaultDeserializationContext withCaches(CacheProvider cacheProvider) {
+    return new EDeserializationContext(this, cacheProvider);
   }
 
   @Override

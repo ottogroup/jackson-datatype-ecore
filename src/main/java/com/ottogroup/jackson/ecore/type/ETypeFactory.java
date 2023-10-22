@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.type.ClassStack;
 import com.fasterxml.jackson.databind.type.TypeBase;
 import com.fasterxml.jackson.databind.type.TypeBindings;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.fasterxml.jackson.databind.util.LookupCache;
+import com.fasterxml.jackson.databind.util.LRUMap;
 import java.io.Serial;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -54,7 +54,7 @@ public class ETypeFactory extends TypeFactory {
   final Map<Class<?>, EClass> knownClasses;
 
   public ETypeFactory(final EPackage.Registry packageRegistry) {
-    super((LookupCache<Object, JavaType>) null);
+    super(new LRUMap<>(64, DEFAULT_MAX_CACHE_SIZE));
     knownClasses =
         packageRegistry.values().stream()
             .map(obj -> (EPackage) obj)
