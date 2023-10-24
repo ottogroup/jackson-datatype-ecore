@@ -183,6 +183,19 @@ java_test(
     ],
 )
 
+java_library(
+    name = "TestSetup",
+    srcs = [":TestSetup.java"],
+    deps = [
+        "//src/main/java/com/ottogroup/jackson/ecore:EcoreMapper",
+        "//src/main/java/com/ottogroup/jackson/ecore:JsonResourceFactory",
+        "@maven//:com_fasterxml_jackson_core_jackson_databind",
+        "@maven//:org_eclipse_emf_org_eclipse_emf_common",
+        "@maven//:org_eclipse_emf_org_eclipse_emf_ecore",
+        "@maven//:org_eclipse_emf_org_eclipse_emf_ecore_xmi",
+    ],
+)
+
 java_test(
     name = "TypeResolverTest",
     size = "small",
@@ -208,18 +221,5 @@ java_test(
         "@maven//:junit_junit",
         "@maven//:org_eclipse_emf_org_eclipse_emf_common",
         "@maven//:org_eclipse_emf_org_eclipse_emf_ecore",
-    ],
-)
-
-java_library(
-    name = "TestSetup",
-    srcs = [":TestSetup.java"],
-    deps = [
-        "//src/main/java/com/ottogroup/jackson/ecore:EcoreMapper",
-        "//src/main/java/com/ottogroup/jackson/ecore:JsonResourceFactory",
-        "@maven//:com_fasterxml_jackson_core_jackson_databind",
-        "@maven//:org_eclipse_emf_org_eclipse_emf_common",
-        "@maven//:org_eclipse_emf_org_eclipse_emf_ecore",
-        "@maven//:org_eclipse_emf_org_eclipse_emf_ecore_xmi",
     ],
 )
