@@ -17,37 +17,52 @@ import static org.junit.Assert.assertEquals;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emfcloud.jackson.junit.model.ModelFactory;
+import org.eclipse.emfcloud.jackson.junit.model.ModelPackage;
 import org.eclipse.emfcloud.jackson.junit.model.PrimaryObject;
 import org.eclipse.emfcloud.jackson.junit.model.Sex;
 import org.eclipse.emfcloud.jackson.junit.model.SomeKind;
 import org.eclipse.emfcloud.jackson.junit.model.User;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class EnumTest {
+
+  private static ObjectMapper mapper;
+  private static ResourceSet resourceSet;
+
+  @Before
+  public void setUpOnce() {
+    final var packages = new EPackage[] {ModelPackage.eINSTANCE};
+    mapper = TestSetup.newMapper(packages);
+    resourceSet = TestSetup.newResourceSet(packages);
+  }
+
   @Test
   public void testEnums() {
     final JsonNode expected =
-        TestSetup.mapper
+        mapper
             .createArrayNode()
             .add(
-                TestSetup.mapper
+                mapper
                     .createObjectNode()
                     .put("eClass", "http://www.emfjson.org/jackson/model#//User"))
             .add(
-                TestSetup.mapper
+                mapper
                     .createObjectNode()
                     .put("eClass", "http://www.emfjson.org/jackson/model#//User")
                     .put("sex", "FEMALE"));
 
-    final Resource resource =
-        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource = resourceSet.createResource(URI.createURI("tests/test.json"));
 
     final User u1 = ModelFactory.eINSTANCE.createUser();
     u1.setSex(Sex.MALE);
@@ -58,30 +73,29 @@ public class EnumTest {
     resource.getContents().add(u1);
     resource.getContents().add(u2);
 
-    Assert.assertEquals(expected, TestSetup.mapper.valueToTree(resource));
+    Assert.assertEquals(expected, mapper.valueToTree(resource));
   }
 
   @Test
   public void testLoadEnums() throws IOException {
     final JsonNode data =
-        TestSetup.mapper
+        mapper
             .createArrayNode()
             .add(
-                TestSetup.mapper
+                mapper
                     .createObjectNode()
                     .put("eClass", "http://www.emfjson.org/jackson/model#//User")
                     .put("name", "A")
                     .put("sex", "MALE"))
             .add(
-                TestSetup.mapper
+                mapper
                     .createObjectNode()
                     .put("eClass", "http://www.emfjson.org/jackson/model#//User")
                     .put("name", "B")
                     .put("sex", "FEMALE"));
 
-    final Resource resource =
-        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
-    resource.load(new ByteArrayInputStream(TestSetup.mapper.writeValueAsBytes(data)), null);
+    final Resource resource = resourceSet.createResource(URI.createURI("tests/test.json"));
+    resource.load(new ByteArrayInputStream(mapper.writeValueAsBytes(data)), null);
 
     assertEquals(2, resource.getContents().size());
 
@@ -100,29 +114,28 @@ public class EnumTest {
   @Test
   public void testSaveEnumDifferentCases() {
     final JsonNode expected =
-        TestSetup.mapper
+        mapper
             .createArrayNode()
             .add(
-                TestSetup.mapper
+                mapper
                     .createObjectNode()
                     .put("eClass", "http://www.emfjson.org/jackson/model#//PrimaryObject")
                     .put("unsettableAttributeWithNonNullDefault", "junit")
                     .put("kind", "one"))
             .add(
-                TestSetup.mapper
+                mapper
                     .createObjectNode()
                     .put("eClass", "http://www.emfjson.org/jackson/model#//PrimaryObject")
                     .put("unsettableAttributeWithNonNullDefault", "junit")
                     .put("kind", "two"))
             .add(
-                TestSetup.mapper
+                mapper
                     .createObjectNode()
                     .put("eClass", "http://www.emfjson.org/jackson/model#//PrimaryObject")
                     .put("unsettableAttributeWithNonNullDefault", "junit")
                     .put("kind", "Three-is-Three"));
 
-    final Resource resource =
-        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource = resourceSet.createResource(URI.createURI("tests/test.json"));
     {
       final PrimaryObject p = ModelFactory.eINSTANCE.createPrimaryObject();
       p.setKind(SomeKind.ONE);
@@ -139,35 +152,33 @@ public class EnumTest {
       resource.getContents().add(p);
     }
 
-    final var reconfiguredMapper =
-        TestSetup.mapper.copy().setSerializationInclusion(Include.NON_EMPTY);
+    final var reconfiguredMapper = mapper.copy().setSerializationInclusion(Include.NON_EMPTY);
     Assert.assertEquals(expected, reconfiguredMapper.valueToTree(resource));
   }
 
   @Test
   public void testLoadEnumDifferentCases() throws IOException {
     final JsonNode data =
-        TestSetup.mapper
+        mapper
             .createArrayNode()
             .add(
-                TestSetup.mapper
+                mapper
                     .createObjectNode()
                     .put("eClass", "http://www.emfjson.org/jackson/model#//PrimaryObject")
                     .put("kind", "one"))
             .add(
-                TestSetup.mapper
+                mapper
                     .createObjectNode()
                     .put("eClass", "http://www.emfjson.org/jackson/model#//PrimaryObject")
                     .put("kind", "two"))
             .add(
-                TestSetup.mapper
+                mapper
                     .createObjectNode()
                     .put("eClass", "http://www.emfjson.org/jackson/model#//PrimaryObject")
                     .put("kind", "Three-is-Three"));
 
-    final Resource resource =
-        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
-    resource.load(new ByteArrayInputStream(TestSetup.mapper.writeValueAsBytes(data)), null);
+    final Resource resource = resourceSet.createResource(URI.createURI("tests/test.json"));
+    resource.load(new ByteArrayInputStream(mapper.writeValueAsBytes(data)), null);
 
     assertEquals(3, resource.getContents().size());
 

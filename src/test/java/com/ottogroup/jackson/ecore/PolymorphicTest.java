@@ -15,45 +15,59 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emfcloud.jackson.junit.model.AbstractType;
 import org.eclipse.emfcloud.jackson.junit.model.ConcreteTypeOne;
 import org.eclipse.emfcloud.jackson.junit.model.ConcreteTypeTwo;
 import org.eclipse.emfcloud.jackson.junit.model.Container;
 import org.eclipse.emfcloud.jackson.junit.model.ModelFactory;
+import org.eclipse.emfcloud.jackson.junit.model.ModelPackage;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class PolymorphicTest {
 
+  private static ObjectMapper mapper;
+  private static ResourceSet resourceSet;
+
+  @Before
+  public void setUpOnce() {
+    final var packages = new EPackage[] {ModelPackage.eINSTANCE};
+    mapper = TestSetup.newMapper(packages);
+    resourceSet = TestSetup.newResourceSet(packages);
+  }
+
   @Test
   public void testSaveTwoObjectsWithTypeInformation() {
     final JsonNode expected =
-        TestSetup.mapper
+        mapper
             .createObjectNode()
             .put("eClass", "http://www.emfjson.org/jackson/model#//Container")
             .set(
                 "elements",
-                TestSetup.mapper
+                mapper
                     .createArrayNode()
                     .add(
-                        TestSetup.mapper
+                        mapper
                             .createObjectNode()
                             .put("eClass", "http://www.emfjson.org/jackson/model#//ConcreteTypeOne")
                             .put("name", "First"))
                     .add(
-                        TestSetup.mapper
+                        mapper
                             .createObjectNode()
                             .put("eClass", "http://www.emfjson.org/jackson/model#//ConcreteTypeTwo")
                             .put("name", "Two")));
 
-    final Resource resource =
-        TestSetup.resourceSet.createResource(URI.createURI("tests/types.json"));
+    final Resource resource = resourceSet.createResource(URI.createURI("tests/types.json"));
 
     final Container c = ModelFactory.eINSTANCE.createContainer();
     final ConcreteTypeOne one = ModelFactory.eINSTANCE.createConcreteTypeOne();
@@ -64,13 +78,13 @@ public class PolymorphicTest {
     c.getElements().add(two);
     resource.getContents().add(c);
 
-    Assert.assertEquals(expected, TestSetup.mapper.valueToTree(resource));
+    Assert.assertEquals(expected, mapper.valueToTree(resource));
   }
 
   @Test
   public void testLoadTwoObjectsWithTypeInformation() throws IOException {
     final Resource resource =
-        TestSetup.resourceSet.createResource(URI.createURI("testdata/test-load-types.json"));
+        resourceSet.createResource(URI.createURI("testdata/test-load-types.json"));
     final Map<Object, Object> options = new HashMap<>();
     resource.load(options);
 

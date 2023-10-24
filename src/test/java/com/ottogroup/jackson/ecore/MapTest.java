@@ -16,27 +16,40 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Map;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emfcloud.jackson.junit.model.ETypes;
 import org.eclipse.emfcloud.jackson.junit.model.ModelFactory;
+import org.eclipse.emfcloud.jackson.junit.model.ModelPackage;
 import org.eclipse.emfcloud.jackson.junit.model.Type;
 import org.eclipse.emfcloud.jackson.junit.model.Value;
+import org.junit.Before;
 import org.junit.Test;
 
 public class MapTest {
 
+  private static ObjectMapper mapper;
+  private static ResourceSet resourceSet;
+
+  @Before
+  public void setUpOnce() {
+    final var packages = new EPackage[] {ModelPackage.eINSTANCE};
+    mapper = TestSetup.newMapper(packages);
+    resourceSet = TestSetup.newResourceSet(packages);
+  }
+
   @Test
   public void testSaveMap() throws IOException {
-    final JsonNode expected =
-        TestSetup.mapper.readTree(Paths.get("testdata/test-map-1.json").toFile());
+    final JsonNode expected = mapper.readTree(Paths.get("testdata/test-map-1.json").toFile());
 
-    final Resource resource =
-        TestSetup.resourceSet.createResource(URI.createURI("tests/test-map-1.json"));
+    final Resource resource = resourceSet.createResource(URI.createURI("tests/test-map-1.json"));
 
     final ETypes types = ModelFactory.eINSTANCE.createETypes();
     {
@@ -55,14 +68,14 @@ public class MapTest {
     }
     resource.getContents().add(types);
 
-    final JsonNode actual = TestSetup.mapper.valueToTree(resource);
+    final JsonNode actual = mapper.valueToTree(resource);
     assertEquals(expected, actual);
   }
 
   @Test
   public void testLoadMap() {
     final Resource resource =
-        TestSetup.resourceSet.getResource(URI.createURI("testdata/test-map-1.json"), true);
+        resourceSet.getResource(URI.createURI("testdata/test-map-1.json"), true);
 
     assertEquals(1, resource.getContents().size());
     assertTrue(resource.getContents().get(0) instanceof ETypes);
@@ -86,11 +99,9 @@ public class MapTest {
 
   @Test
   public void testSaveMapWithStringKey() throws IOException {
-    final JsonNode expected =
-        TestSetup.mapper.readTree(Paths.get("testdata/test-map-2.json").toFile());
+    final JsonNode expected = mapper.readTree(Paths.get("testdata/test-map-2.json").toFile());
 
-    final Resource resource =
-        TestSetup.resourceSet.createResource(URI.createURI("tests/test-map-2.json"));
+    final Resource resource = resourceSet.createResource(URI.createURI("tests/test-map-2.json"));
 
     final ETypes types = ModelFactory.eINSTANCE.createETypes();
 
@@ -106,14 +117,14 @@ public class MapTest {
 
     resource.getContents().add(types);
 
-    final JsonNode actual = TestSetup.mapper.valueToTree(resource);
+    final JsonNode actual = mapper.valueToTree(resource);
     assertEquals(expected, actual);
   }
 
   @Test
   public void testLoadMapWithStringKey() {
     final Resource resource =
-        TestSetup.resourceSet.getResource(URI.createURI("testdata/test-map-2.json"), true);
+        resourceSet.getResource(URI.createURI("testdata/test-map-2.json"), true);
 
     assertEquals(1, resource.getContents().size());
     assertTrue(resource.getContents().get(0) instanceof ETypes);
@@ -131,28 +142,26 @@ public class MapTest {
   @Test
   public void testSaveMapWithDataTypeKey() {
     final JsonNode expected =
-        TestSetup.mapper
+        mapper
             .createObjectNode()
-            .set(
-                "dataTypeMapValues", TestSetup.mapper.createObjectNode().put("test.json", "hello"));
+            .set("dataTypeMapValues", mapper.createObjectNode().put("test.json", "hello"));
 
     final ETypes types = ModelFactory.eINSTANCE.createETypes();
     types.getDataTypeMapValues().put("test.json", "hello");
 
-    final JsonNode actual = TestSetup.mapper.valueToTree(types);
+    final JsonNode actual = mapper.valueToTree(types);
     assertEquals(expected, actual);
   }
 
   @Test
   public void testSaveLoadWithDataTypeKey() throws IOException {
     final JsonNode data =
-        TestSetup.mapper
+        mapper
             .createObjectNode()
             .put("eClass", "http://www.emfjson.org/jackson/model#//ETypes")
-            .set(
-                "dataTypeMapValues", TestSetup.mapper.createObjectNode().put("test.json", "hello"));
+            .set("dataTypeMapValues", mapper.createObjectNode().put("test.json", "hello"));
 
-    final ETypes types = TestSetup.mapper.reader().forType(ETypes.class).readValue(data);
+    final ETypes types = mapper.reader().forType(ETypes.class).readValue(data);
 
     assertNotNull(types);
     assertEquals("hello", types.getDataTypeMapValues().map().get("test.json"));

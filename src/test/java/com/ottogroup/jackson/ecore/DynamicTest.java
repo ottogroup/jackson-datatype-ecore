@@ -19,6 +19,7 @@ import static org.junit.Assert.assertTrue;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -37,13 +38,26 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class DynamicTest {
+
+  private static ObjectMapper mapper;
+  private static ResourceSet resourceSet;
+
+  @Before
+  public void setUpOnce() {
+    mapper = TestSetup.newMapper();
+    resourceSet = TestSetup.newResourceSet();
+    final var uriMap = resourceSet.getURIConverter().getURIMap();
+    uriMap.put(
+        URI.createURI("http://emfjson/dynamic/model"), URI.createURI("testdata/dynamic.ecore"));
+  }
+
   @Test
   public void testWriteByteArrayJSON() throws IOException {
-    final var modelResource =
-        TestSetup.resourceSet.getResource(URI.createURI("testdata/test.ecore"), true);
+    final var modelResource = resourceSet.getResource(URI.createURI("testdata/test.ecore"), true);
     final var ePackage = (EPackage) modelResource.getContents().get(0);
     final var eClass = (EClass) ePackage.getEClassifier("Test");
     final var eObject = EcoreUtil.create(eClass);
@@ -51,7 +65,7 @@ public class DynamicTest {
     final var feature = (EAttribute) eClass.getEStructuralFeature("blob");
     eObject.eSet(feature, bytes);
 
-    final var blobResource = TestSetup.resourceSet.createResource(URI.createURI("tests/blob.json"));
+    final var blobResource = resourceSet.createResource(URI.createURI("tests/blob.json"));
     blobResource.getContents().add(eObject);
     final var out = new ByteArrayOutputStream();
     blobResource.save(out, null);
@@ -83,18 +97,18 @@ public class DynamicTest {
         .getContents()
         .add(ePackage);
 
-    TestSetup.resourceSet.getPackageRegistry().put(ePackage.getNsURI(), ePackage);
+    resourceSet.getPackageRegistry().put(ePackage.getNsURI(), ePackage);
 
     // when
     final var tree =
-        TestSetup.mapper
+        mapper
             .createObjectNode()
             .put("eClass", "http://foo.org/p#//Foo")
             .put("name", "Max Mustermann");
     final var object =
-        TestSetup.mapper
+        mapper
             .readerFor(EObject.class)
-            .withAttribute(ResourceSet.class, TestSetup.resourceSet)
+            .withAttribute(ResourceSet.class, resourceSet)
             .<EObject>readValue(tree);
 
     // then
@@ -105,19 +119,15 @@ public class DynamicTest {
   @Test
   public void testSaveContainmentWithOpposite() throws IOException {
     final JsonNode expected =
-        TestSetup.mapper
+        mapper
             .createObjectNode()
             .put("eClass", "http://emfjson/dynamic/model#//A")
-            .set("containB", TestSetup.mapper.createObjectNode().put("intValue", 42));
+            .set("containB", mapper.createObjectNode().put("intValue", 42));
 
     final EClass classA =
-        (EClass)
-            TestSetup.resourceSet.getEObject(
-                URI.createURI("http://emfjson/dynamic/model#//A"), true);
+        (EClass) resourceSet.getEObject(URI.createURI("http://emfjson/dynamic/model#//A"), true);
     final EClass classB =
-        (EClass)
-            TestSetup.resourceSet.getEObject(
-                URI.createURI("http://emfjson/dynamic/model#//B"), true);
+        (EClass) resourceSet.getEObject(URI.createURI("http://emfjson/dynamic/model#//B"), true);
 
     final EObject a1 = EcoreUtil.create(classA);
     final EObject b1 = EcoreUtil.create(classB);
@@ -125,30 +135,30 @@ public class DynamicTest {
     b1.eSet(classB.getEStructuralFeature("parent"), a1);
     b1.eSet(classB.getEStructuralFeature("intValue"), 42);
 
-    final var writer = TestSetup.mapper.writerFor(EObject.class);
+    final var writer = mapper.writerFor(EObject.class);
     final var bytes = writer.writeValueAsBytes(a1);
-    final var actual = TestSetup.mapper.readTree(bytes);
+    final var actual = mapper.readTree(bytes);
     Assert.assertEquals(expected, actual);
   }
 
   @Test
   public void testLoadContainmentWithOpposite() throws JsonProcessingException {
     final JsonNode data =
-        TestSetup.mapper
+        mapper
             .createObjectNode()
             .put("eClass", "http://emfjson/dynamic/model#//A")
             .put("someKind", "e1")
             .set(
                 "containB",
-                TestSetup.mapper
+                mapper
                     .createObjectNode()
                     .put("eClass", "http://emfjson/dynamic/model#//B")
                     .put("someKind", "e1"));
 
     final EObject a1 =
-        TestSetup.mapper
+        mapper
             .reader()
-            .withAttribute(ResourceSet.class, TestSetup.resourceSet)
+            .withAttribute(ResourceSet.class, resourceSet)
             .treeToValue(data, EObject.class);
 
     final EObject b1 = (EObject) a1.eGet(a1.eClass().getEStructuralFeature("containB"));
@@ -160,25 +170,20 @@ public class DynamicTest {
   @Test
   public void testSaveDynamicEnum() throws IOException {
     final JsonNode expected =
-        TestSetup.mapper
+        mapper
             .createObjectNode()
             .put("eClass", "http://emfjson/dynamic/model#//A")
             .put("intValue", 0)
             .put("someKind", "e1");
 
     final EClass a =
-        (EClass)
-            TestSetup.resourceSet.getEObject(
-                URI.createURI("http://emfjson/dynamic/model#//A"), true);
+        (EClass) resourceSet.getEObject(URI.createURI("http://emfjson/dynamic/model#//A"), true);
     final EObject a1 = EcoreUtil.create(a);
 
     final var writer =
-        TestSetup.mapper
-            .copy()
-            .setSerializationInclusion(Include.NON_EMPTY)
-            .writerFor(EObject.class);
+        mapper.copy().setSerializationInclusion(Include.NON_EMPTY).writerFor(EObject.class);
     final var bytes = writer.writeValueAsBytes(a1);
-    final var actual = TestSetup.mapper.readTree(bytes);
+    final var actual = mapper.readTree(bytes);
 
     assertEquals(expected, actual);
   }
@@ -186,14 +191,13 @@ public class DynamicTest {
   @Test
   public void testLoadDynamicEnum() throws IOException {
     final JsonNode data =
-        TestSetup.mapper
+        mapper
             .createObjectNode()
             .put("eClass", "http://emfjson/dynamic/model#//A")
             .put("someKind", "E2");
 
-    final Resource resource =
-        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
-    resource.load(new ByteArrayInputStream(TestSetup.mapper.writeValueAsBytes(data)), null);
+    final Resource resource = resourceSet.createResource(URI.createURI("tests/test.json"));
+    resource.load(new ByteArrayInputStream(mapper.writeValueAsBytes(data)), null);
 
     assertEquals(1, resource.getContents().size());
 

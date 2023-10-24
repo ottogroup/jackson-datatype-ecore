@@ -1,12 +1,12 @@
 package com.ottogroup.jackson.ecore;
 
-import static com.ottogroup.jackson.ecore.TestSetup.mapper;
 import static org.eclipse.emf.ecore.util.EcoreUtil.GEN_MODEL_ANNOTATION_URI;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -17,9 +17,17 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class EcoreTest {
+
+  private static ObjectMapper mapper;
+
+  @Before
+  public void setUpOnce() {
+    mapper = TestSetup.newMapper();
+  }
 
   @Test
   public void attribute() throws IOException {

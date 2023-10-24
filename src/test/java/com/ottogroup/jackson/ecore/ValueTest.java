@@ -19,6 +19,7 @@ import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -28,8 +29,10 @@ import java.util.Date;
 import java.util.List;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emfcloud.jackson.junit.model.ETypes;
 import org.eclipse.emfcloud.jackson.junit.model.ModelFactory;
@@ -37,9 +40,20 @@ import org.eclipse.emfcloud.jackson.junit.model.ModelPackage;
 import org.eclipse.emfcloud.jackson.junit.model.Sex;
 import org.eclipse.emfcloud.jackson.junit.model.User;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class ValueTest {
+
+  private static ObjectMapper mapper;
+  private static ResourceSet resourceSet;
+
+  @Before
+  public void setUpOnce() {
+    final var packages = new EPackage[] {ModelPackage.eINSTANCE};
+    mapper = TestSetup.newMapper(packages);
+    resourceSet = TestSetup.newResourceSet(packages);
+  }
 
   static class Foo {
     Object id;
@@ -58,37 +72,34 @@ public class ValueTest {
   public void pojoObject() {
     final var foo = new Foo();
     foo.setId(42);
-    final var tree = TestSetup.mapper.valueToTree(foo);
+    final var tree = mapper.valueToTree(foo);
     assertTrue(tree.get("id").isNumber());
   }
 
   @Test
   public void testOptionSaveDefaultValues() {
-    final var includeDefaultsMapper =
-        TestSetup.mapper.copy().setSerializationInclusion(Include.NON_EMPTY);
+    final var includeDefaultsMapper = mapper.copy().setSerializationInclusion(Include.NON_EMPTY);
     {
-      final JsonNode expected = TestSetup.mapper.createObjectNode().put("name", "u1");
+      final JsonNode expected = mapper.createObjectNode().put("name", "u1");
 
       final User u = ModelFactory.eINSTANCE.createUser();
       u.setName("u1");
 
-      Assert.assertEquals(expected, TestSetup.mapper.valueToTree(u));
+      Assert.assertEquals(expected, mapper.valueToTree(u));
     }
 
     {
-      final JsonNode expected =
-          TestSetup.mapper.createObjectNode().put("name", "u1").put("sex", "FEMALE");
+      final JsonNode expected = mapper.createObjectNode().put("name", "u1").put("sex", "FEMALE");
 
       final User u = ModelFactory.eINSTANCE.createUser();
       u.setName("u1");
       u.setSex(Sex.FEMALE);
 
-      Assert.assertEquals(expected, TestSetup.mapper.valueToTree(u));
+      Assert.assertEquals(expected, mapper.valueToTree(u));
     }
 
     {
-      final JsonNode expected =
-          TestSetup.mapper.createObjectNode().put("name", "u1").put("sex", "MALE");
+      final JsonNode expected = mapper.createObjectNode().put("name", "u1").put("sex", "MALE");
 
       final User u = ModelFactory.eINSTANCE.createUser();
       u.setName("u1");
@@ -96,8 +107,7 @@ public class ValueTest {
       assertEquals(expected, includeDefaultsMapper.valueToTree(u));
     }
     {
-      final JsonNode expected =
-          TestSetup.mapper.createObjectNode().put("name", "u1").put("sex", "FEMALE");
+      final JsonNode expected = mapper.createObjectNode().put("name", "u1").put("sex", "FEMALE");
 
       final User u = ModelFactory.eINSTANCE.createUser();
       u.setName("u1");
@@ -110,16 +120,13 @@ public class ValueTest {
   @Test
   public void testStringValues() {
     final JsonNode expected =
-        TestSetup.mapper
+        mapper
             .createObjectNode()
             .put("eClass", "http://www.emfjson.org/jackson/model#//ETypes")
             .put("eString", "Hello")
-            .set(
-                "eStrings",
-                TestSetup.mapper.createArrayNode().add("Hello").add("The").add("World"));
+            .set("eStrings", mapper.createArrayNode().add("Hello").add("The").add("World"));
 
-    final Resource resource =
-        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource = resourceSet.createResource(URI.createURI("tests/test.json"));
     final ETypes valueObject = ModelFactory.eINSTANCE.createETypes();
     valueObject.setEString("Hello");
 
@@ -129,37 +136,34 @@ public class ValueTest {
 
     resource.getContents().add(valueObject);
 
-    Assert.assertEquals(expected, TestSetup.mapper.valueToTree(resource));
+    Assert.assertEquals(expected, mapper.valueToTree(resource));
   }
 
   @Test
   public void testEmptyString() throws IOException {
-    final JsonNode expected = TestSetup.mapper.createObjectNode().put("name", "");
+    final JsonNode expected = mapper.createObjectNode().put("name", "");
 
     final var user = ModelFactory.eINSTANCE.createUser();
     user.setName("");
 
-    final var actual = TestSetup.mapper.valueToTree(user);
+    final var actual = mapper.valueToTree(user);
     assertEquals(expected, actual);
 
-    final var read = TestSetup.mapper.treeToValue(actual, User.class);
+    final var read = mapper.treeToValue(actual, User.class);
     assertEquals("", read.getName());
   }
 
   @Test
   public void testLoadStringValues() throws IOException {
     final JsonNode data =
-        TestSetup.mapper
+        mapper
             .createObjectNode()
             .put("eClass", "http://www.emfjson.org/jackson/model#//ETypes")
             .put("eString", "Hello")
-            .set(
-                "eStrings",
-                TestSetup.mapper.createArrayNode().add("Hello").add("The").add("World"));
+            .set("eStrings", mapper.createArrayNode().add("Hello").add("The").add("World"));
 
-    final Resource resource =
-        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
-    resource.load(new ByteArrayInputStream(TestSetup.mapper.writeValueAsBytes(data)), null);
+    final Resource resource = resourceSet.createResource(URI.createURI("tests/test.json"));
+    resource.load(new ByteArrayInputStream(mapper.writeValueAsBytes(data)), null);
 
     final EObject root = resource.getContents().get(0);
     assertEquals(ModelPackage.Literals.ETYPES, root.eClass());
@@ -172,14 +176,13 @@ public class ValueTest {
   @Test
   public void testLoadNullValue() throws IOException {
     final JsonNode data =
-        TestSetup.mapper
+        mapper
             .createObjectNode()
             .put("eClass", "http://www.emfjson.org/jackson/model#//ETypes")
             .putNull("eString");
 
-    final Resource resource =
-        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
-    resource.load(new ByteArrayInputStream(TestSetup.mapper.writeValueAsBytes(data)), null);
+    final Resource resource = resourceSet.createResource(URI.createURI("tests/test.json"));
+    resource.load(new ByteArrayInputStream(mapper.writeValueAsBytes(data)), null);
 
     final EObject root = resource.getContents().get(0);
 
@@ -190,14 +193,13 @@ public class ValueTest {
   @Test
   public void testIntValues() {
     final JsonNode expected =
-        TestSetup.mapper
+        mapper
             .createObjectNode()
             .put("eClass", "http://www.emfjson.org/jackson/model#//ETypes")
             .put("eInt", 2)
-            .set("eInts", TestSetup.mapper.createArrayNode().add(2).add(4).add(7));
+            .set("eInts", mapper.createArrayNode().add(2).add(4).add(7));
 
-    final Resource resource =
-        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource = resourceSet.createResource(URI.createURI("tests/test.json"));
 
     final ETypes valueObject = ModelFactory.eINSTANCE.createETypes();
     valueObject.setEInt(2);
@@ -208,21 +210,20 @@ public class ValueTest {
 
     resource.getContents().add(valueObject);
 
-    Assert.assertEquals(expected, TestSetup.mapper.valueToTree(resource));
+    Assert.assertEquals(expected, mapper.valueToTree(resource));
   }
 
   @Test
   public void testLoadIntValues() throws IOException {
     final JsonNode data =
-        TestSetup.mapper
+        mapper
             .createObjectNode()
             .put("eClass", "http://www.emfjson.org/jackson/model#//ETypes")
             .put("eInt", 2)
-            .set("eInts", TestSetup.mapper.createArrayNode().add(2).add(4).add(7));
+            .set("eInts", mapper.createArrayNode().add(2).add(4).add(7));
 
-    final Resource resource =
-        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
-    resource.load(new ByteArrayInputStream(TestSetup.mapper.writeValueAsBytes(data)), null);
+    final Resource resource = resourceSet.createResource(URI.createURI("tests/test.json"));
+    resource.load(new ByteArrayInputStream(mapper.writeValueAsBytes(data)), null);
 
     assertEquals(1, resource.getContents().size());
 
@@ -241,14 +242,13 @@ public class ValueTest {
   @Test
   public void testBooleanValues() {
     final JsonNode expected =
-        TestSetup.mapper
+        mapper
             .createObjectNode()
             .put("eClass", "http://www.emfjson.org/jackson/model#//ETypes")
             .put("eBoolean", true)
-            .set("eBooleans", TestSetup.mapper.createArrayNode().add(false).add(true));
+            .set("eBooleans", mapper.createArrayNode().add(false).add(true));
 
-    final Resource resource =
-        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource = resourceSet.createResource(URI.createURI("tests/test.json"));
 
     final ETypes valueObject = ModelFactory.eINSTANCE.createETypes();
     valueObject.setEBoolean(true);
@@ -258,7 +258,7 @@ public class ValueTest {
 
     resource.getContents().add(valueObject);
 
-    Assert.assertEquals(expected, TestSetup.mapper.valueToTree(resource));
+    Assert.assertEquals(expected, mapper.valueToTree(resource));
   }
 
   @Test
@@ -266,18 +266,17 @@ public class ValueTest {
     final Calendar calendar = Calendar.getInstance();
     calendar.set(2020, Calendar.OCTOBER, 10);
 
-    assertNotNull(TestSetup.mapper.getDateFormat());
+    assertNotNull(mapper.getDateFormat());
 
     final JsonNode expected =
-        TestSetup.mapper
+        mapper
             .createObjectNode()
             .put("eClass", "http://www.emfjson.org/jackson/model#//ETypes")
             .put(
                 "eDate",
                 EcoreUtil.convertToString(EcorePackage.Literals.EDATE, calendar.getTime()));
 
-    final Resource resource =
-        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource = resourceSet.createResource(URI.createURI("tests/test.json"));
     final ETypes valueObject = ModelFactory.eINSTANCE.createETypes();
 
     final Date value = calendar.getTime();
@@ -285,14 +284,14 @@ public class ValueTest {
 
     resource.getContents().add(valueObject);
 
-    Assert.assertEquals(expected, TestSetup.mapper.valueToTree(resource));
+    Assert.assertEquals(expected, mapper.valueToTree(resource));
   }
 
   @Test
   @SuppressWarnings("JavaUtilDate")
   public void testLoadDateValue() throws IOException {
     final JsonNode data =
-        TestSetup.mapper
+        mapper
             .createObjectNode()
             .put("eClass", "http://www.emfjson.org/jackson/model#//ETypes")
             .put("eDate", "2011-10-10T00:00:00");
@@ -300,9 +299,8 @@ public class ValueTest {
     final Date value =
         (Date) EcoreUtil.createFromString(EcorePackage.eINSTANCE.getEDate(), "2011-10-10T00:00:00");
 
-    final Resource resource =
-        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
-    resource.load(new ByteArrayInputStream(TestSetup.mapper.writeValueAsBytes(data)), null);
+    final Resource resource = resourceSet.createResource(URI.createURI("tests/test.json"));
+    resource.load(new ByteArrayInputStream(mapper.writeValueAsBytes(data)), null);
 
     assertEquals(1, resource.getContents().size());
 
@@ -313,14 +311,13 @@ public class ValueTest {
 
   @Test
   public void testBigIntegerValue() {
-    final Resource resource =
-        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource = resourceSet.createResource(URI.createURI("tests/test.json"));
 
     final ETypes valueObject = ModelFactory.eINSTANCE.createETypes();
     valueObject.setEBigInteger(new BigInteger("15"));
     resource.getContents().add(valueObject);
 
-    final JsonNode result = TestSetup.mapper.valueToTree(resource);
+    final JsonNode result = mapper.valueToTree(resource);
 
     assertEquals(new BigInteger("15"), result.get("eBigInteger").bigIntegerValue());
   }
@@ -328,14 +325,13 @@ public class ValueTest {
   @Test
   public void testLoadBigIntegerValue() throws IOException {
     final JsonNode data =
-        TestSetup.mapper
+        mapper
             .createObjectNode()
             .put("eClass", "http://www.emfjson.org/jackson/model#//ETypes")
             .put("eBigInteger", 15);
 
-    final Resource resource =
-        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
-    resource.load(new ByteArrayInputStream(TestSetup.mapper.writeValueAsBytes(data)), null);
+    final Resource resource = resourceSet.createResource(URI.createURI("tests/test.json"));
+    resource.load(new ByteArrayInputStream(mapper.writeValueAsBytes(data)), null);
 
     assertEquals(1, resource.getContents().size());
 
@@ -350,32 +346,30 @@ public class ValueTest {
   @Test
   public void testByteValue() {
     final JsonNode expected =
-        TestSetup.mapper
+        mapper
             .createObjectNode()
             .put("eClass", "http://www.emfjson.org/jackson/model#//ETypes")
             .put("eByte", 101);
 
-    final Resource resource =
-        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource = resourceSet.createResource(URI.createURI("tests/test.json"));
 
     final ETypes valueObject = ModelFactory.eINSTANCE.createETypes();
     final byte b = 101;
     valueObject.setEByte(b);
     resource.getContents().add(valueObject);
 
-    Assert.assertEquals(expected, TestSetup.mapper.valueToTree(resource));
+    Assert.assertEquals(expected, mapper.valueToTree(resource));
   }
 
   @Test
   public void testBigDecimalValue() {
-    final Resource resource =
-        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource = resourceSet.createResource(URI.createURI("tests/test.json"));
 
     final ETypes valueObject = ModelFactory.eINSTANCE.createETypes();
     valueObject.setEBigDecimal(new BigDecimal("1.5"));
     resource.getContents().add(valueObject);
 
-    final JsonNode result = TestSetup.mapper.valueToTree(resource);
+    final JsonNode result = mapper.valueToTree(resource);
 
     assertEquals(new BigDecimal("1.5"), result.get("eBigDecimal").decimalValue());
   }
@@ -383,14 +377,13 @@ public class ValueTest {
   @Test
   public void testLoadBigDecimalValue() throws IOException {
     final JsonNode data =
-        TestSetup.mapper
+        mapper
             .createObjectNode()
             .put("eClass", "http://www.emfjson.org/jackson/model#//ETypes")
             .put("eBigDecimal", 1.5);
 
-    final Resource resource =
-        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
-    resource.load(new ByteArrayInputStream(TestSetup.mapper.writeValueAsBytes(data)), null);
+    final Resource resource = resourceSet.createResource(URI.createURI("tests/test.json"));
+    resource.load(new ByteArrayInputStream(mapper.writeValueAsBytes(data)), null);
 
     assertEquals(1, resource.getContents().size());
 
@@ -414,8 +407,7 @@ public class ValueTest {
               [201707260000] ]
           }""";
 
-    final Resource resource =
-        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource = resourceSet.createResource(URI.createURI("tests/test.json"));
     resource.load(new ByteArrayInputStream(data.getBytes(UTF_8)), null);
 
     final ETypes object = (ETypes) resource.getContents().get(0);
@@ -430,8 +422,7 @@ public class ValueTest {
             "eClass": "http://www.emfjson.org/jackson/model#//ETypes",
             "objectType": 1}""";
 
-    final Resource resource =
-        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource = resourceSet.createResource(URI.createURI("tests/test.json"));
     resource.load(new ByteArrayInputStream(data.getBytes(UTF_8)), null);
 
     final ETypes object = (ETypes) resource.getContents().get(0);
@@ -440,13 +431,12 @@ public class ValueTest {
 
   @Test
   public void testSaveObjectTypeValue() {
-    final Resource resource =
-        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource = resourceSet.createResource(URI.createURI("tests/test.json"));
     final ETypes object = ModelFactory.eINSTANCE.createETypes();
     object.setObjectType(1);
     resource.getContents().add(object);
 
-    final JsonNode result = TestSetup.mapper.valueToTree(resource);
+    final JsonNode result = mapper.valueToTree(resource);
     assertTrue(result.get("objectType").isNumber());
   }
 }

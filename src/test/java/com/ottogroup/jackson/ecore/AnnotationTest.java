@@ -15,6 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.ByteArrayInputStream;
@@ -24,32 +25,44 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAnnotation;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emfcloud.jackson.junit.model.ModelFactory;
+import org.eclipse.emfcloud.jackson.junit.model.ModelPackage;
 import org.eclipse.emfcloud.jackson.junit.model.User;
+import org.junit.Before;
 import org.junit.Test;
 
 public class AnnotationTest {
 
+  private static ObjectMapper mapper;
+  private static ResourceSet resourceSet;
+
+  @Before
+  public void setUpOnce() {
+    final var packages = new EPackage[] {ModelPackage.eINSTANCE};
+    mapper = TestSetup.newMapper(packages);
+    resourceSet = TestSetup.newResourceSet(packages);
+  }
+
   @Test
   public void testSaveAnnotation() {
     final JsonNode expected =
-        TestSetup.mapper
+        mapper
             .createObjectNode()
             .put("eClass", "http://www.eclipse.org/emf/2002/Ecore#//EClass")
             .<ObjectNode>set(
                 "eAnnotations",
-                TestSetup.mapper
+                mapper
                     .createArrayNode()
                     .add(
-                        TestSetup.mapper
+                        mapper
                             .createObjectNode()
                             .put("source", "source")
-                            .set(
-                                "details",
-                                TestSetup.mapper.createObjectNode().put("displayName", "value"))))
+                            .set("details", mapper.createObjectNode().put("displayName", "value"))))
             .put("name", "Foo");
 
     final EClass eClass = EcoreFactory.eINSTANCE.createEClass();
@@ -61,10 +74,10 @@ public class AnnotationTest {
     eAnnotation.getDetails().put("displayName", "value");
     eClass.getEAnnotations().add(eAnnotation);
 
-    final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("test.json"));
+    final Resource resource = resourceSet.createResource(URI.createURI("test.json"));
     resource.getContents().add(eClass);
 
-    final JsonNode result = TestSetup.mapper.valueToTree(resource);
+    final JsonNode result = mapper.valueToTree(resource);
 
     assertEquals(expected, result);
   }
@@ -72,25 +85,24 @@ public class AnnotationTest {
   @Test
   public void testLoadAnnotation() throws IOException {
     final JsonNode data =
-        TestSetup.mapper
+        mapper
             .createObjectNode()
             .put("eClass", "http://www.eclipse.org/emf/2002/Ecore#//EClass")
             .put("name", "Foo")
             .set(
                 "eAnnotations",
-                TestSetup.mapper
+                mapper
                     .createArrayNode()
                     .add(
-                        TestSetup.mapper
+                        mapper
                             .createObjectNode()
                             .put("eClass", "http://www.eclipse.org/emf/2002/Ecore#//EAnnotation")
                             .put("source", "source")
                             .set(
-                                "details",
-                                TestSetup.mapper.createObjectNode().put("displayName", "value"))));
+                                "details", mapper.createObjectNode().put("displayName", "value"))));
 
-    final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("test.json"));
-    resource.load(new ByteArrayInputStream(TestSetup.mapper.writeValueAsBytes(data)), null);
+    final Resource resource = resourceSet.createResource(URI.createURI("test.json"));
+    resource.load(new ByteArrayInputStream(mapper.writeValueAsBytes(data)), null);
 
     assertEquals(1, resource.getContents().size());
 
@@ -120,24 +132,22 @@ public class AnnotationTest {
     eClass.getEAnnotations().add(eAnnotation);
 
     final var actual =
-        TestSetup.mapper
+        mapper
             .copy()
             .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
             .valueToTree(eClass);
     final JsonNode expected =
-        TestSetup.mapper
+        mapper
             .createObjectNode()
             .<ObjectNode>set(
                 "e_annotations",
-                TestSetup.mapper
+                mapper
                     .createArrayNode()
                     .add(
-                        TestSetup.mapper
+                        mapper
                             .createObjectNode()
                             .put("source", "source")
-                            .set(
-                                "details",
-                                TestSetup.mapper.createObjectNode().put("displayName", "value"))))
+                            .set("details", mapper.createObjectNode().put("displayName", "value"))))
             .put("name", "Foo");
 
     assertEquals(expected, actual);
@@ -147,8 +157,8 @@ public class AnnotationTest {
   public void jsonAliasUserId() throws IOException {
     final String id = "4711";
     final String name = "Max Mustermann";
-    final var object = TestSetup.mapper.createObjectNode().put("id", id).put("name", name);
-    final var user = TestSetup.mapper.readValue(object.traverse(), User.class);
+    final var object = mapper.createObjectNode().put("id", id).put("name", name);
+    final var user = mapper.readValue(object.traverse(), User.class);
     assertEquals(id, user.getUserId());
     assertEquals(name, user.getName());
   }
@@ -157,8 +167,8 @@ public class AnnotationTest {
   public void jsonAliasUserUId() throws IOException {
     final String id = "4711";
     final String name = "Max Mustermann";
-    final var object = TestSetup.mapper.createObjectNode().put("uid", id).put("name", name);
-    final var user = TestSetup.mapper.readValue(object.traverse(), User.class);
+    final var object = mapper.createObjectNode().put("uid", id).put("name", name);
+    final var user = mapper.readValue(object.traverse(), User.class);
     assertEquals(id, user.getUserId());
     assertEquals(name, user.getName());
   }
@@ -167,7 +177,7 @@ public class AnnotationTest {
   public void ignored() {
     final var user = ModelFactory.eINSTANCE.createUser();
     user.setIgnored(42);
-    final var tree = TestSetup.mapper.valueToTree(user);
+    final var tree = mapper.valueToTree(user);
     assertFalse("The ignored field should not be serialized", tree.has("ignored"));
   }
 }

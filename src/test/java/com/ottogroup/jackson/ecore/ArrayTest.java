@@ -15,18 +15,33 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emfcloud.jackson.junit.array.ArrayFactory;
 import org.eclipse.emfcloud.jackson.junit.array.ArrayHost;
+import org.eclipse.emfcloud.jackson.junit.array.ArrayPackage;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class ArrayTest {
+
+  private static ObjectMapper mapper;
+  private static ResourceSet resourceSet;
+
+  @Before
+  public void setUpOnce() {
+    final var packages = new EPackage[] {ArrayPackage.eINSTANCE};
+    mapper = TestSetup.newMapper(packages);
+    resourceSet = TestSetup.newResourceSet(packages);
+  }
 
   @Test
   public void testByteArray() {
@@ -34,10 +49,10 @@ public class ArrayTest {
     final var bytes = new byte[] {1, 2};
     u.setB(bytes);
 
-    final ObjectNode expected = TestSetup.mapper.createObjectNode();
+    final ObjectNode expected = mapper.createObjectNode();
     expected.put("b", bytes);
 
-    Assert.assertEquals(expected, TestSetup.mapper.valueToTree(u));
+    Assert.assertEquals(expected, mapper.valueToTree(u));
   }
 
   @Test
@@ -45,11 +60,11 @@ public class ArrayTest {
     final ArrayHost u = ArrayFactory.eINSTANCE.createArrayHost();
     u.setD1(new Double[] {1.1, 1.2});
 
-    final ObjectNode expected = TestSetup.mapper.createObjectNode();
+    final ObjectNode expected = mapper.createObjectNode();
     final ArrayNode a = expected.putArray("d1");
     a.add(1.1).add(1.2);
 
-    Assert.assertEquals(expected, TestSetup.mapper.valueToTree(u));
+    Assert.assertEquals(expected, mapper.valueToTree(u));
   }
 
   @Test
@@ -57,12 +72,12 @@ public class ArrayTest {
     final ArrayHost u = ArrayFactory.eINSTANCE.createArrayHost();
     u.setD2(new Double[][] {{1.1, 1.2}, {2.1, 2.2}});
 
-    final ObjectNode expected = TestSetup.mapper.createObjectNode();
+    final ObjectNode expected = mapper.createObjectNode();
     final ArrayNode a = expected.putArray("d2");
     a.addArray().add(1.1).add(1.2);
     a.addArray().add(2.1).add(2.2);
 
-    Assert.assertEquals(expected, TestSetup.mapper.valueToTree(u));
+    Assert.assertEquals(expected, mapper.valueToTree(u));
   }
 
   @Test
@@ -70,7 +85,7 @@ public class ArrayTest {
     final ArrayHost u = ArrayFactory.eINSTANCE.createArrayHost();
     u.setD3(new Double[][][] {{{1.11, 1.12}, {1.21, 1.22}}, {{2.11, 2.12}, {2.21, 2.22}}});
 
-    final ObjectNode expected = TestSetup.mapper.createObjectNode();
+    final ObjectNode expected = mapper.createObjectNode();
     final ArrayNode a = expected.putArray("d3");
     final ArrayNode a1 = a.addArray();
     a1.addArray().add(1.11).add(1.12);
@@ -79,7 +94,7 @@ public class ArrayTest {
     a2.addArray().add(2.11).add(2.12);
     a2.addArray().add(2.21).add(2.22);
 
-    Assert.assertEquals(expected, TestSetup.mapper.valueToTree(u));
+    Assert.assertEquals(expected, mapper.valueToTree(u));
   }
 
   @Test
@@ -87,12 +102,12 @@ public class ArrayTest {
     final ArrayHost u = ArrayFactory.eINSTANCE.createArrayHost();
     u.setS2(new String[][] {{"1.1", "1.2"}, {"2.1", "2.2"}});
 
-    final ObjectNode expected = TestSetup.mapper.createObjectNode();
+    final ObjectNode expected = mapper.createObjectNode();
     final ArrayNode a = expected.putArray("s2");
     a.addArray().add("1.1").add("1.2");
     a.addArray().add("2.1").add("2.2");
 
-    Assert.assertEquals(expected, TestSetup.mapper.valueToTree(u));
+    Assert.assertEquals(expected, mapper.valueToTree(u));
   }
 
   @Test
@@ -106,8 +121,7 @@ public class ArrayTest {
                 [2.1, 2.2] ]
             }""";
 
-    final Resource resource =
-        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource = resourceSet.createResource(URI.createURI("tests/test.json"));
     resource.load(new ByteArrayInputStream(data.getBytes(UTF_8)), null);
 
     final ArrayHost host = (ArrayHost) resource.getContents().get(0);
@@ -128,8 +142,7 @@ public class ArrayTest {
                 ["2.1", "2.2"] ]
             }""";
 
-    final Resource resource =
-        TestSetup.resourceSet.createResource(URI.createURI("tests/test.json"));
+    final Resource resource = resourceSet.createResource(URI.createURI("tests/test.json"));
     resource.load(new ByteArrayInputStream(data.getBytes(UTF_8)), null);
 
     final ArrayHost host = (ArrayHost) resource.getContents().get(0);

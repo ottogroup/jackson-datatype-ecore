@@ -54,9 +54,13 @@ java_test(
     name = "DynamicTest",
     size = "small",
     srcs = [":DynamicTest.java"],
-    data = ["//testdata:test.ecore"],
+    data = [
+        "//testdata:dynamic.ecore",
+        "//testdata:test.ecore",
+    ],
     deps = [
         ":TestSetup",
+        "//src/main/java/com/ottogroup/jackson/ecore:EcoreMapper",
         "@maven//:com_fasterxml_jackson_core_jackson_annotations",
         "@maven//:com_fasterxml_jackson_core_jackson_core",
         "@maven//:com_fasterxml_jackson_core_jackson_databind",
@@ -146,6 +150,7 @@ java_test(
     deps = [
         ":TestSetup",
         "//src/test/resources/model",
+        "@maven//:com_fasterxml_jackson_core_jackson_databind",
         "@maven//:junit_junit",
     ],
 )
@@ -171,6 +176,7 @@ java_test(
     data = ["//testdata:test.json"],
     deps = [
         ":TestSetup",
+        "@maven//:com_fasterxml_jackson_core_jackson_databind",
         "@maven//:junit_junit",
         "@maven//:org_eclipse_emf_org_eclipse_emf_common",
         "@maven//:org_eclipse_emf_org_eclipse_emf_ecore",
@@ -185,6 +191,7 @@ java_test(
     deps = [
         ":TestSetup",
         "//src/test/resources/model",
+        "@maven//:com_fasterxml_jackson_core_jackson_databind",
         "@maven//:junit_junit",
     ],
 )
@@ -207,12 +214,9 @@ java_test(
 java_library(
     name = "TestSetup",
     srcs = [":TestSetup.java"],
-    data = ["//testdata:dynamic.ecore"],
     deps = [
         "//src/main/java/com/ottogroup/jackson/ecore:EcoreMapper",
         "//src/main/java/com/ottogroup/jackson/ecore:JsonResourceFactory",
-        "//src/test/resources/model",
-        "//src/test/resources/model:array",
         "@maven//:com_fasterxml_jackson_core_jackson_databind",
         "@maven//:org_eclipse_emf_org_eclipse_emf_common",
         "@maven//:org_eclipse_emf_org_eclipse_emf_ecore",

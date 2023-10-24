@@ -19,10 +19,13 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emfcloud.jackson.junit.model.Address;
 import org.eclipse.emfcloud.jackson.junit.model.ModelFactory;
@@ -34,14 +37,25 @@ import org.eclipse.emfcloud.jackson.junit.model.TargetObject;
 import org.eclipse.emfcloud.jackson.junit.model.User;
 import org.eclipse.emfcloud.jackson.junit.model.impl.PhysicalNodeImpl;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class ContainmentTest {
 
+  private static ObjectMapper mapper;
+  private static ResourceSet resourceSet;
+
+  @Before
+  public void setUpOnce() {
+    final var packages = new EPackage[] {ModelPackage.eINSTANCE};
+    mapper = TestSetup.newMapper(packages);
+    resourceSet = TestSetup.newResourceSet(packages);
+  }
+
   @Test
   public void testSaveOneRootObjectWithAttributes() {
     final JsonNode expected =
-        TestSetup.mapper
+        mapper
             .createObjectNode()
             .put("eClass", "http://www.emfjson.org/jackson/model#//User")
             .put("userId", "1")
@@ -51,28 +65,27 @@ public class ContainmentTest {
     user.setUserId("1");
     user.setName("John");
 
-    final Resource resource =
-        TestSetup.resourceSet.createResource(URI.createURI("tests/test-save-1.json"));
+    final Resource resource = resourceSet.createResource(URI.createURI("tests/test-save-1.json"));
     assertNotNull(resource);
 
     resource.getContents().add(user);
 
-    Assert.assertEquals(expected, TestSetup.mapper.valueToTree(resource));
+    Assert.assertEquals(expected, mapper.valueToTree(resource));
   }
 
   @Test
   public void testSaveTwoRootObjectsWithAttributesNoReferences() {
     final JsonNode expected =
-        TestSetup.mapper
+        mapper
             .createArrayNode()
             .add(
-                TestSetup.mapper
+                mapper
                     .createObjectNode()
                     .put("eClass", "http://www.emfjson.org/jackson/model#//User")
                     .put("userId", "1")
                     .put("name", "John"))
             .add(
-                TestSetup.mapper
+                mapper
                     .createObjectNode()
                     .put("eClass", "http://www.emfjson.org/jackson/model#//User")
                     .put("userId", "2")
@@ -88,48 +101,46 @@ public class ContainmentTest {
     user2.setName("Mary");
     user2.setSex(Sex.FEMALE);
 
-    final Resource resource =
-        TestSetup.resourceSet.createResource(URI.createURI("tests/test-save-2.json"));
+    final Resource resource = resourceSet.createResource(URI.createURI("tests/test-save-2.json"));
     resource.getContents().add(user1);
     resource.getContents().add(user2);
 
-    Assert.assertEquals(expected, TestSetup.mapper.valueToTree(resource));
+    Assert.assertEquals(expected, mapper.valueToTree(resource));
   }
 
   @Test
   public void testSaveOneObjectWithOneChild() {
     final JsonNode expected =
-        TestSetup.mapper
+        mapper
             .createObjectNode()
             .put("eClass", "http://www.emfjson.org/jackson/model#//User")
-            .set("address", TestSetup.mapper.createObjectNode());
+            .set("address", mapper.createObjectNode());
 
-    final Resource resource = TestSetup.resourceSet.createResource(URI.createURI("test"));
+    final Resource resource = resourceSet.createResource(URI.createURI("test"));
 
     final User user = ModelFactory.eINSTANCE.createUser();
     final Address address = ModelFactory.eINSTANCE.createAddress();
     user.setAddress(address);
     resource.getContents().add(user);
 
-    Assert.assertEquals(expected, TestSetup.mapper.valueToTree(resource));
+    Assert.assertEquals(expected, mapper.valueToTree(resource));
   }
 
   @Test
   public void testLoadOneObjectWithOneChild() throws IOException {
     final JsonNode data =
-        TestSetup.mapper
+        mapper
             .createObjectNode()
             .put("eClass", "http://www.emfjson.org/jackson/model#//User")
             .set(
                 "address",
-                TestSetup.mapper
+                mapper
                     .createObjectNode()
                     .put("eClass", "http://www.emfjson.org/jackson/model#//Address"));
 
     final var resource =
         (JsonResource)
-            TestSetup.resourceSet.createResource(
-                URI.createURI("testLoadOneObjectWithOneChild.json"));
+            resourceSet.createResource(URI.createURI("testLoadOneObjectWithOneChild.json"));
     resource.load(data, null);
 
     assertNotNull(resource);
@@ -143,47 +154,45 @@ public class ContainmentTest {
   @Test
   public void testSaveOneObjectWithManyChildren() {
     final JsonNode expected =
-        TestSetup.mapper
+        mapper
             .createObjectNode()
             .put("eClass", "http://www.emfjson.org/jackson/model#//Node")
             .set(
                 "child",
-                TestSetup.mapper
+                mapper
                     .createArrayNode()
-                    .add(TestSetup.mapper.createObjectNode())
-                    .add(TestSetup.mapper.createObjectNode())
-                    .add(TestSetup.mapper.createObjectNode()));
+                    .add(mapper.createObjectNode())
+                    .add(mapper.createObjectNode())
+                    .add(mapper.createObjectNode()));
 
     final Resource resource =
-        TestSetup.resourceSet.createResource(
-            URI.createURI("testSaveOneObjectWithManyChildren.json"));
+        resourceSet.createResource(URI.createURI("testSaveOneObjectWithManyChildren.json"));
     final Node root = ModelFactory.eINSTANCE.createNode();
     root.getChild().add(ModelFactory.eINSTANCE.createNode());
     root.getChild().add(ModelFactory.eINSTANCE.createNode());
     root.getChild().add(ModelFactory.eINSTANCE.createNode());
     resource.getContents().add(root);
 
-    Assert.assertEquals(expected, TestSetup.mapper.valueToTree(resource));
+    Assert.assertEquals(expected, mapper.valueToTree(resource));
   }
 
   @Test
   public void testLoadOneObjectWithManyChildren() throws IOException {
     final JsonNode data =
-        TestSetup.mapper
+        mapper
             .createObjectNode()
             .put("eClass", "http://www.emfjson.org/jackson/model#//Node")
             .set(
                 "child",
-                TestSetup.mapper
+                mapper
                     .createArrayNode()
-                    .add(TestSetup.mapper.createObjectNode())
-                    .add(TestSetup.mapper.createObjectNode())
-                    .add(TestSetup.mapper.createObjectNode()));
+                    .add(mapper.createObjectNode())
+                    .add(mapper.createObjectNode())
+                    .add(mapper.createObjectNode()));
 
     final var resource =
         (JsonResource)
-            TestSetup.resourceSet.createResource(
-                URI.createURI("testLoadOneObjectWithManyChildren.json"));
+            resourceSet.createResource(URI.createURI("testLoadOneObjectWithManyChildren.json"));
     resource.load(data, null);
 
     assertNotNull(resource);
@@ -197,7 +206,7 @@ public class ContainmentTest {
   @Test
   public void testLoadProxyRootContainmentWithOppositeReference() {
     final Resource resource =
-        TestSetup.resourceSet.getResource(URI.createURI("testdata/test-proxy-6.json"), true);
+        resourceSet.getResource(URI.createURI("testdata/test-proxy-6.json"), true);
 
     assertEquals(1, resource.getContents().size());
     assertTrue(resource.getContents().get(0) instanceof PrimaryObject);
@@ -222,7 +231,7 @@ public class ContainmentTest {
   @Test
   public void testLoadResolvingProxyContainment() {
     final Resource resource =
-        TestSetup.resourceSet.getResource(URI.createURI("testdata/test-proxy-5b.json"), true);
+        resourceSet.getResource(URI.createURI("testdata/test-proxy-5b.json"), true);
 
     assertFalse(resource.getContents().isEmpty());
     assertEquals(1, resource.getContents().size());
@@ -243,7 +252,7 @@ public class ContainmentTest {
   @Test
   public void testLoadResolvingProxyContainmentWithAbstract() {
     final Resource resource =
-        TestSetup.resourceSet.getResource(URI.createURI("testdata/test-proxy-7b.json"), true);
+        resourceSet.getResource(URI.createURI("testdata/test-proxy-7b.json"), true);
 
     assertFalse(resource.getContents().isEmpty());
     assertEquals(1, resource.getContents().size());
@@ -259,7 +268,7 @@ public class ContainmentTest {
     assertTrue(sibling.eIsProxy());
     assertNotSame(root.eResource(), sibling.eResource());
 
-    final EObject resolve = EcoreUtil.resolve(sibling, TestSetup.resourceSet);
+    final EObject resolve = EcoreUtil.resolve(sibling, resourceSet);
     assertNotSame(resolve.eResource(), root.eResource());
   }
 }
