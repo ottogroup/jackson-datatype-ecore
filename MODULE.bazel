@@ -5,7 +5,7 @@ maven = use_extension("@rules_jvm_external//:extensions.bzl", "maven")
 
 JACKSON_VERSION = "2.16.0"
 
-XTEXT_VERSION = "2.32.0"
+XTEXT_VERSION = "2.33.0"
 
 maven.install(
     artifacts = [
