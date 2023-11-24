@@ -12,7 +12,7 @@ maven.install(
         # Eclipse Modeling Framework
         "org.eclipse.emf:org.eclipse.emf.common:2.29.0",
         "org.eclipse.emf:org.eclipse.emf.ecore.xcore:1.26.0",
-        "org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.35.0",
+        "org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.36.0",
         "org.eclipse.emf:org.eclipse.emf.ecore:2.35.0",
 
         # Xtext
