@@ -31,7 +31,7 @@ maven.install(
 
         # Tools
         "com.google.errorprone:error_prone_annotations:2.24.1",
-        "com.google.googlejavaformat:google-java-format:1.19.1",
+        "com.google.googlejavaformat:google-java-format:1.19.2",
         "org.fusesource.jansi:jansi:2.4.1",
     ],
     excluded_artifacts = ["log4j:log4j"],
